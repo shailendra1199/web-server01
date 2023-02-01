@@ -30,4 +30,6 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           echo "Running script on EC2 instance"
+          cd /home/ubuntu
+          echo "shailendra script is running " > test.txt 
           # Your script here
