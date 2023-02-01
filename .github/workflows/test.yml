@@ -1,0 +1,33 @@
+name: Access AWS EC2 Instance
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: ap-south-1
+
+jobs:
+  access-ec2:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install and configure AWS CLI
+      run: |
+        sudo apt-get update
+        sudo apt-get install awscli
+        aws configure set default.region ${{ env.AWS_REGION }}
+
+    - name: SSH into EC2 instance
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.EC2_HOSTNAME }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          echo "Running script on EC2 instance"
+          # Your script here
