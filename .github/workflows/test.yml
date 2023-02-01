@@ -17,10 +17,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
-    - name: Get runner IP
-      run: |
-        echo "::set-env name=RUNNER_IP::$(curl -s https://checkip.amazonaws.com)"
-
+  
     - name: Install and configure AWS CLI
       run: |
         sudo apt-get update
