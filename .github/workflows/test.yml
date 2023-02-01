@@ -30,6 +30,6 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           sudo su
-          docker pull nginx:latest
-          docker run -itd --name nginx -p 80:80 nginx:latest
-          docker ps 
+          sudo docker pull nginx:latest
+          sudo docker run -itd --name nginx -p 80:80 nginx:latest
+          sudo docker ps 
