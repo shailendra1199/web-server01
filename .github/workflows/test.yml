@@ -34,12 +34,7 @@ jobs:
 
     - name: Add IP addresses to EC2 SG
       run: |
-        # Get the existing inbound rules of the EC2 SG
-        RULES=$(aws ec2 describe-security-groups --group-id  --region ${{ env.AWS_REGION }} | jq '.SecurityGroups[].IpPermissions')
-
-        # Add the GitHub Actions IP addresses to the EC2 SG
-        for IP in "${IPS[@]}"; do
-          RULES+="{\"IpProtocol\":\"tcp\",\"FromPort\":22,\"ToPort\":22,\"IpRanges\":[{\"CidrIp\":\"$IP/32\"}]}"
-        done
-
-        aws ec2 authorize-security-group-ingress --group-id sg-0f621ddb3a37eb5ac --ip-permissions "${RULES[@]}" --region ${{ env.AWS_REGION }}
+        # Get the existing inbound rules of the EC2 SG    
+        aws ec2 authorize-security-group-ingress --group-id g-0f621ddb3a37eb5ac --protocol tcp --port 22 --cidr ${IPS}/32 --region ${{ env.AWS_REGION }}
+        
+       
