@@ -29,7 +29,7 @@ jobs:
 
     - name: Print Public IP
       run: |
-        IP_ADD=echo ${{ steps.ip.outputs.ipv4 }}
+        IPS=echo ${{ steps.ip.outputs.ipv4 }}
 
     - name: Add IP addresses to EC2 SG
       run: |
