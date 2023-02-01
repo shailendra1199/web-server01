@@ -3,7 +3,7 @@ name: Add GitHub Actions IP Whitelist to EC2 SG
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   AWS_REGION: ap-south-1
