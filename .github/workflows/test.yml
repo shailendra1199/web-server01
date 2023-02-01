@@ -23,10 +23,13 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
-    - name: Get GitHub Actions IP addresses
+    - name: Public IP
+      id: ip
+      uses: haythem/public-ip@v1.3
+
+    - name: Print Public IP
       run: |
-        # Get the current GitHub Actions IP addresses
-        IPS=($(curl -s https://api.github.com/meta | jq -r '.hooks[].ip'))
+        IP_ADD=echo ${{ steps.ip.outputs.ipv4 }}
 
     - name: Add IP addresses to EC2 SG
       run: |
