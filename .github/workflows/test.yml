@@ -29,7 +29,8 @@ jobs:
 
     - name: Print Public IP
       run: |
-        IPS=echo ${{ steps.ip.outputs.ipv4 }}
+        IPS=(${{ steps.ip.outputs.ipv4 }} )
+        echo $IPS
 
     - name: Add IP addresses to EC2 SG
       run: |
