@@ -33,3 +33,4 @@ jobs:
           sudo docker pull nginx:latest
           sudo docker run -itd --name nginx -p 80:80 nginx:latest
           sudo docker ps 
+          echo "DEPLOYED" 
