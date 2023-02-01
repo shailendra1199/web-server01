@@ -29,7 +29,7 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          echo "Running script on EC2 instance"
-          cd /home/ubuntu
-          echo "shailendra script is running " > test.txt 
-          # Your script here
+          sudo su
+          docker pull nginx:latest
+          docker run -itd --name nginx -p 80:80 nginx:latest
+          docker ps 
