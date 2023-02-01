@@ -23,7 +23,7 @@ jobs:
         aws configure set default.region ${{ env.AWS_REGION }}
 
     - name: SSH into EC2 instance
-      uses: appleboy/ssh-action@v1
+      uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ secrets.EC2_HOSTNAME }}
         username: ${{ secrets.USERNAME }}
