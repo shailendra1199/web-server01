@@ -25,7 +25,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
-  
+    - name: Get GitHub Actions IP addresses
+      run: |
+        # Get the current GitHub Actions IP addresses
+        IPS=($(curl -s https://api.github.com/meta | jq -r '.hooks[].ip'))
+        
     - name: Install and configure AWS CLI
       run: |
         sudo apt-get update
