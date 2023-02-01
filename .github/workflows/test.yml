@@ -1,50 +1,41 @@
-name: Access AWS EC2 Instance
+name: Add GitHub Actions IP Whitelist to EC2 SG
 
 on:
   push:
     branches:
-      - main
+      - master
 
 env:
   AWS_REGION: ap-south-1
 
 jobs:
-  access-ec2:
+  add-ip-whitelist:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Public IP
-      id: ip
-      uses: haythem/public-ip@v1.3
-
-    - name: Print Public IP
-      run: |
-        echo ${{ steps.ip.outputs.ipv4 }}
-        echo ${{ steps.ip.outputs.ipv6 }}
-
     - name: Checkout code
       uses: actions/checkout@v2
-      
+
+    - name: Configure AWS CLI
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
     - name: Get GitHub Actions IP addresses
       run: |
         # Get the current GitHub Actions IP addresses
         IPS=($(curl -s https://api.github.com/meta | jq -r '.hooks[].ip'))
-        
-    - name: Install and configure AWS CLI
-      run: |
-        sudo apt-get update
-        sudo apt-get install awscli
-        aws configure set default.region ${{ env.AWS_REGION }}
 
-    - name: SSH into EC2 instance
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ secrets.EC2_HOSTNAME }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        script: |
-          sudo su
-          sudo docker pull nginx:latest
-          sudo docker run -itd --name nginx -p 80:80 nginx:latest
-          sudo docker ps 
-          echo "DEPLOYED" 
+    - name: Add IP addresses to EC2 SG
+      run: |
+        # Get the existing inbound rules of the EC2 SG
+        RULES=($(aws ec2 describe-security-groups --group-id  --region ${{ env.AWS_REGION }} | jq '.SecurityGroups[].IpPermissions'))
+
+        # Add the GitHub Actions IP addresses to the EC2 SG
+        for IP in "${IPS[@]}"; do
+          RULES+=("{\"IpProtocol\":\"tcp\",\"FromPort\":22,\"ToPort\":22,\"IpRanges\":[{\"CidrIp\":\"$IP/32\"}]}")
+        done
+
+        aws ec2 authorize-security-group-ingress --group-id sg-0f621ddb3a37eb5ac --ip-permissions "${RULES[@]}" --region ${{ env.AWS_REGION }}
