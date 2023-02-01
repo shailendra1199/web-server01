@@ -1,4 +1,4 @@
-name: Add GitHub Actions IP Whitelist to EC2 SG
+name: Building NGINX Container
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Configure AWS CLI
+    - name: Check Cred
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -32,14 +32,14 @@ jobs:
         IPS=(${{ steps.ip.outputs.ipv4 }} )
         echo $IPS
 
-    - name: Add IP addresses to EC2 SG
+    - name: Add GithubACTION IP addresses to EC2 SG
       run: |
         IPS=(${{ steps.ip.outputs.ipv4 }} )
         echo $IPS
         # Get the existing inbound rules of the EC2 SG    
         aws ec2 authorize-security-group-ingress --group-id ${{ secrets.SECURITY_GROUP_ID}} --protocol tcp --port 22 --cidr  $IPS/32 --region ${{ env.AWS_REGION }}
         
-    - name: SSH into EC2 instance
+    - name: SSH into EC2 instance & deploy Nginx 
       uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ secrets.EC2_HOSTNAME }}
@@ -52,7 +52,7 @@ jobs:
           sudo docker ps 
           echo "DEPLOYED" 
           
-    - name: Remove GithubAction IP_ADD
+    - name: Remove GithubAction IP_ADD From AWS_SG
       run: | 
         IPS=(${{ steps.ip.outputs.ipv4 }} )
         echo $IPS
