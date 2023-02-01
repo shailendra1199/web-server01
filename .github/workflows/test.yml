@@ -51,3 +51,8 @@ jobs:
           sudo docker run -itd --name nginx -p 80:80 nginx:latest
           sudo docker ps 
           echo "DEPLOYED" 
+          
+    - name: Remove GithubAction IP_ADD
+      run: | 
+        aws ec2 revoke-security-group-ingress --group-id  sg-0f621ddb3a37eb5ac --protocol tcp --port 22 --cidr  $IPS/32 --region ${{ env.AWS_REGION }}
+
